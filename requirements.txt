@@ -12,3 +12,4 @@ seaborn
 sklearn.metrics
 pyplot.matplotlib
 kagglehub
+pillow
