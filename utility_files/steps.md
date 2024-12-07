@@ -13,7 +13,7 @@ Data Augmentation: Usa tecniche di data augmentation (flip, rotazione, zoom) per
 
 - **Feature Extraction e Fine-Tuning**: Usa le feature intermedie estratte dal modello per classificare il colore e segmentare i bordi delle lattine.
 - **Classificazione del Colore**: Aggiungi una densa layer sopra il modello pre-addestrato per classificare i colori.
-Segmentazione dei Bordi: Aggiungi un piccolo decoder, come una Fully Convolutional Network (FCN) o una U-Net, per generare una maschera dei bordi della lattina.
+- **Segmentazione dei Bordi**: Aggiungi un piccolo decoder, come una Fully Convolutional Network (FCN) o una U-Net, per generare una maschera dei bordi della lattina.
 - **Addestramento del Modello**: Dividi i dati in train e validation set se non l'hai già fatto.
 Addestra il modello sui dati utilizzando la cross-entropy per la classificazione e una funzione di loss specifica per la segmentazione, come la binary cross-entropy o la dice loss.
 - **Valutazione e Test**: Valuta il modello sul set di test per verificare le prestazioni sia nella classificazione del colore sia nella segmentazione dei bordi.
