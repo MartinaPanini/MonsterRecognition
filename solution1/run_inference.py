@@ -5,7 +5,7 @@ CLIENT = InferenceHTTPClient(
     api_url="https://detect.roboflow.com",
     api_key="2YoFjYTilm3H760rS15g"
 )
-mypath = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition-main/monster_wall.jpeg"
+mypath = "monster_wall.jpeg"
 result = CLIENT.infer(mypath, model_id="tin-can-r0yev/1")
 #print(result)
 
@@ -14,7 +14,7 @@ import supervision as sv
 import cv2
 
 # define the image url to use for inference
-image_file = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition-main/monster_wall.jpeg"
+image_file = "monster_wall.jpeg"
 image = cv2.imread(image_file)
 
 # load the results into the supervision Detections api
@@ -36,7 +36,7 @@ annotated_image = label_annotator.annotate(
 from PIL import Image, ImageDraw
 import os
 
-output_folder = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition-main/solution1/images"
+output_folder = "solution1/images"
 # Make sure the output folder exists
 os.makedirs(output_folder, exist_ok=True)
 
