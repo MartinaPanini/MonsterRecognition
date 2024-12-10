@@ -36,7 +36,7 @@ annotated_image = label_annotator.annotate(
 from PIL import Image, ImageDraw
 import os
 
-output_folder = "solution1/images"
+output_folder = "solution1/bounded_images"
 # Make sure the output folder exists
 os.makedirs(output_folder, exist_ok=True)
 
