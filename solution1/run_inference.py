@@ -1,4 +1,3 @@
-
 from inference_sdk import InferenceHTTPClient
 
 CLIENT = InferenceHTTPClient(
