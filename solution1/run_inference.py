@@ -4,16 +4,16 @@ CLIENT = InferenceHTTPClient(
     api_url="https://detect.roboflow.com",
     api_key="2YoFjYTilm3H760rS15g"
 )
-mypath = "monster_wall.jpeg"
+mypath = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/monster_wall.jpeg"
 result = CLIENT.infer(mypath, model_id="tin-can-r0yev/1")
-#print(result)
+print(result)
 
 from inference import get_model
 import supervision as sv
 import cv2
 
 # define the image url to use for inference
-image_file = "monster_wall.jpeg"
+image_file = mypath
 image = cv2.imread(image_file)
 
 # load the results into the supervision Detections api
@@ -30,12 +30,12 @@ annotated_image = label_annotator.annotate(
     scene=annotated_image, detections=detections)
 
 # display the image
-#sv.plot_image(annotated_image)
+sv.plot_image(annotated_image)
 
 from PIL import Image, ImageDraw
 import os
 
-output_folder = "solution1/bounded_images"
+output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/bounded_images/"
 # Make sure the output folder exists
 os.makedirs(output_folder, exist_ok=True)
 
@@ -70,5 +70,8 @@ for i, prediction in enumerate(result['predictions']):
     cropped_image = original_image.crop((left, top, right, bottom))
 
     # Save the cropped image in the specified folder
+    # Ensure the output path exists
     output_path = os.path.join(output_folder, f"cropped_image_{i}.jpeg")
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
     cropped_image.save(output_path)
