@@ -30,7 +30,7 @@ annotated_image = label_annotator.annotate(
     scene=annotated_image, detections=detections)
 
 # display the image
-#sv.plot_image(annotated_image)
+sv.plot_image(annotated_image)
 
 from PIL import Image, ImageDraw
 import os
