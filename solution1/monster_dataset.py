@@ -28,6 +28,12 @@ class CanDataset(Dataset):
     def __len__(self):
         return len(self.image_paths)
     
+    def get_image_path(self, idx):
+        """
+        Returns the image path for a given index.
+        """
+        return self.image_paths[idx]
+    
     def __getitem__(self, idx):
         image_path = self.image_paths[idx]
         image = Image.open(image_path).convert('RGB')
@@ -44,3 +50,5 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
+
+print("Dataset class defined successfully!")

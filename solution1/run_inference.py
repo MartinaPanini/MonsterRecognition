@@ -1,77 +1,63 @@
+import os
 from inference_sdk import InferenceHTTPClient
-
-CLIENT = InferenceHTTPClient(
-    api_url="https://detect.roboflow.com",
-    api_key="2YoFjYTilm3H760rS15g"
-)
-mypath = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/images/8EC84F77-6A6C-495E-8E85-EA41CC54B741_1_102_a.jpeg"
-result = CLIENT.infer(mypath, model_id="tin-can-r0yev/1")
-print(result)
-
-from inference import get_model
+from PIL import Image
 import supervision as sv
 import cv2
 
-# define the image url to use for inference
-image_file = mypath
-image = cv2.imread(image_file)
+def run_inference(in_path):
+    CLIENT = InferenceHTTPClient(
+        api_url="https://detect.roboflow.com",
+        api_key="2YoFjYTilm3H760rS15g"
+    )
+    result = CLIENT.infer(in_path, model_id="tin-can-r0yev/1")
 
-# load the results into the supervision Detections api
-detections = sv.Detections.from_inference(result)
+    original_image = Image.open(in_path)
 
-# create supervision annotators
-bounding_box_annotator = sv.BoxAnnotator()
-label_annotator = sv.LabelAnnotator()
+    image_width = result['image']['width']
+    image_height = result['image']['height']
 
-# annotate the image with our inference results
-annotated_image = bounding_box_annotator.annotate(
-    scene=image, detections=detections)
-annotated_image = label_annotator.annotate(
-    scene=annotated_image, detections=detections)
+    if not result['predictions']:
+        print(f"No predictions found for {in_path}!") 
+        return None
 
-# display the image
-sv.plot_image(annotated_image)
+    cropped_images = []
 
-from PIL import Image, ImageDraw
-import os
+    for i, prediction in enumerate(result['predictions']):
+        x = prediction['x']
+        y = prediction['y']
+        width = prediction['width']
+        height = prediction['height']
 
-output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/bounded_images/"
-# Make sure the output folder exists
-os.makedirs(output_folder, exist_ok=True)
+        left = max(0, x - width / 2)
+        top = max(0, y - height / 2)
+        right = min(image_width, x + width / 2)
+        bottom = min(image_height, y + height / 2)
 
-# Load the original image (use the path to your original image file)
-original_image = Image.open(image_file)
+        cropped_image = original_image.crop((left, top, right, bottom))
+        cropped_images.append(cropped_image)
 
-# Image dimensions
-image_width = result['image']['width']
-image_height = result['image']['height']
+    return cropped_images
 
-# Iterate through each prediction and crop the corresponding portion of the image
-for i, prediction in enumerate(result['predictions']):
-    # Calculate bounding box coordinates
-    x = prediction['x']
-    y = prediction['y']
-    width = prediction['width']
-    height = prediction['height']
+def process_dataset(input_dir, output_dir):
+    for root, _, files in os.walk(input_dir):
+        for file in files:
+            if file.lower().endswith(('.png')):
+                in_path = os.path.join(root, file)
 
-    # Calculate the top-left and bottom-right corners of the bounding box
-    left = x - width / 2
-    top = y - height / 2
-    right = x + width / 2
-    bottom = y + height / 2
+                relative_path = os.path.relpath(root, input_dir)
+                out_dir = os.path.join(output_dir, relative_path)
+                os.makedirs(out_dir, exist_ok=True)
 
-    # Make sure the coordinates are within the bounds of the original image
-    left = max(0, left)
-    top = max(0, top)
-    right = min(image_width, right)
-    bottom = min(image_height, bottom)
+                cropped_images = run_inference(in_path)
 
-    # Crop the image to the bounding box
-    cropped_image = original_image.crop((left, top, right, bottom))
+                if cropped_images:
+                    for idx, cropped_image in enumerate(cropped_images):
+                        out_path = os.path.join(out_dir, f"{os.path.splitext(file)[0]}_crop{idx}.png")
+                        cropped_image.save(out_path)
+                        print(f"Saved cropped image for {file}") #out_path
+    print("Done!")
+if __name__ == "__main__":
+    input_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/Monster_energy_drink/Monster_energy_drink/train"  # Replace with the path to your training folder
+    output_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/DatasetInference/train"  # Replace with the path to your output folder
 
-    # Save the cropped image in the specified folder
-    # Ensure the output path exists
-    output_path = os.path.join(output_folder, f"cropped_image_{i}.jpeg")
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    cropped_image.save(output_path)
+    process_dataset(input_dir, output_dir)
