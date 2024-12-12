@@ -4,7 +4,7 @@ CLIENT = InferenceHTTPClient(
     api_url="https://detect.roboflow.com",
     api_key="2YoFjYTilm3H760rS15g"
 )
-mypath = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/monster_wall.jpeg"
+mypath = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/Signal_Image_Video/MonsterProject/MonsterRecognition/images/8EC84F77-6A6C-495E-8E85-EA41CC54B741_1_102_a.jpeg"
 result = CLIENT.infer(mypath, model_id="tin-can-r0yev/1")
 print(result)
 
