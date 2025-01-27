@@ -11,9 +11,18 @@ from run_inference import process_dataset, run_inference_and_draw
 from preprocess_images import preprocess_images
 from histograms import extract_histogram, create_histograms
 from color_class import train_model, classify_data, evaluate_model
-  
+
+# PATHS 
 input_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/Monster_energy_drink/Monster_energy_drink/train"  
 output_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/DatasetInference/train" 
+
+output_results = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results"
+model_statistics_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/model_statistics.txt"
+model_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/trained_model.joblib"
+encoder_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/label_encoder.pkl"
+
+images_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/images"
+output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
 
 # Create Dataset with bounded boxes images from the main Dataset 
 # process_dataset(input_dir, output_dir)
@@ -27,11 +36,11 @@ data, labels, column_names = create_histograms(input_dir)
 # Salvataggio dei dati in un file CSV
 output_train_df = pd.DataFrame(data, columns=column_names)
 output_train_df['Label'] = labels
-output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/dataset_histograms_features.csv", index=False)
+output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/dataset_histograms_features.csv", index=False)
 print("Istogrammi di train estratti e salvati con successo!\n")
 
 # Carica i dati del train dataset e divisione in train set e test set
-train_data = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/dataset_histograms_features.csv")
+train_data = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/dataset_histograms_features.csv")
 X_train, X_test, y_train, y_test = train_test_split(
     train_data.drop(columns=['Label']),
     train_data['Label'],
@@ -49,12 +58,10 @@ metrics = evaluate_model(
     X_test,
     label_encoder.transform(y_test),
     label_encoder,
-    "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/model_statistics.txt"
+    model_statistics_path
     )
 
 # Salvataggio del modello e dell'encoder per riutilizzo futuro
-model_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/trained_model.joblib"
-encoder_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1/label_encoder.pkl"
 dump(model, model_path)
 print("Modello salvato con successo!\n")
 with open(encoder_path, 'wb') as f:
@@ -63,14 +70,12 @@ print("Label encoder salvato con successo!\n")
 
 
 # Load image to recognize and run inference on the image (create bounding boxes of cans)
-images_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/images"
-output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/solution1"
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
-out_image = os.path.join(output_folder, "ImageBounded.png")
-image_name = "tris1.jpeg"
+out_image = os.path.join(output_results, "ImageBounded.png")
+image_name = "monster_wall7.jpeg"
 image_path = os.path.join(images_folder, image_name)
 if not os.path.exists(image_path):
     raise FileNotFoundError(f"The image at path {image_path} does not exist.")
@@ -116,7 +121,15 @@ results_df = pd.DataFrame({
 })
 
 # Salva i risultati in un file CSV
-results_path = os.path.join(output_folder, "classification_results.csv")
+results_path = os.path.join(output_results, "classification_results.csv")
 results_df.to_csv(results_path, index=False)
 print(f"Classificazione completata e salvata in: {results_path}")
 
+# Confronto lattine riconosciute con quelle nel dataset
+true_labels = [d for d in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, d))]
+# Stampa il numero di lattine nel dataset e il numero di predicted labels
+num_true_labels = len(true_labels)
+num_predicted_labels = len(set(predicted_labels))
+missing_labels = set(true_labels) - set(predicted_labels)
+print(f"Lattine mancanti: {num_true_labels - num_predicted_labels}")
+print(f"Lattine mancanti nel dataset: {missing_labels}\n")
