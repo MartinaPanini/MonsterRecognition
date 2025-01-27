@@ -46,4 +46,4 @@ def evaluate_model(model, X_test, y_test, label_encoder, output_path):
         f.write(f"Accuracy: {accuracy * 100:.2f}%\n\n")
         f.write("Classification Report:\n")
         f.write(class_report)
-    print(f"Statistiche salvate in: {output_path}")
+    #print(f"Statistiche salvate in: {output_path}")
