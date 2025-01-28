@@ -11,3 +11,4 @@ supervision
 cv2
 torchvision
 random
+kagglehub
