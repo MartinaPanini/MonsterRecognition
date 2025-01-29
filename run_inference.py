@@ -1,6 +1,6 @@
 import os
 from inference_sdk import InferenceHTTPClient
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 import supervision as sv
 import cv2
 
@@ -12,6 +12,8 @@ def run_inference(in_path):
     result = CLIENT.infer(in_path, model_id="tin-can-r0yev/1")
 
     original_image = Image.open(in_path)
+    original_image = ImageOps.exif_transpose(original_image)
+
     try:
         with Image.open(in_path) as img:
             img.verify()  # Verifica se l'immagine è valida
@@ -41,7 +43,6 @@ def run_inference(in_path):
 
         cropped_image = original_image.crop((left, top, right, bottom))
         cropped_images.append(cropped_image)
-
     return cropped_images
 
 def run_inference_and_draw(in_path, output_path):
@@ -121,7 +122,7 @@ def process_dataset(input_path, output_dir):
                         for idx, cropped_image in enumerate(cropped_images):
                             out_image = os.path.join(out_dir, f"{os.path.splitext(file)[0]}_crop{idx}.png")
                             if cropped_image.mode == "RGB":  # Controlla che sia un'immagine valida
-                                cropped_image.save(output_dir)
+                                cropped_image.save(out_image)
 
     # Caso 2: input_path è una singola immagine
     elif os.path.isfile(input_path):
