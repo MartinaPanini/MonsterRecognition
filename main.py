@@ -5,7 +5,8 @@ import numpy as np
 from joblib import dump, load
 import pickle
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.utils.class_weight import compute_class_weight
 from run_inference import process_dataset, run_inference_and_draw
 from preprocess_images import preprocess_images
 from histograms import extract_histogram, create_histograms
@@ -13,7 +14,8 @@ from color_class import train_model, classify_data, evaluate_model
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
-histograms = False
+histograms = True
+process_images = False
 
 # PATHS 
 train_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/Monster_energy_drink/train"  
@@ -29,18 +31,17 @@ encoder_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDoc
 images_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/images"
 output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
 
-image_name = "monster_wall7.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+image_name = "monster_wall.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
     process_dataset(train_dir, output_train_dir)
     print("Train Dataset created\n")
-    preprocess_images(output_train_dir)
-    print("Train Dataset preprocessed\n")
     process_dataset(test_dir, output_test_dir)
     print("Test Dataset created\n")
-    preprocess_images(output_test_dir)
-    print("Test Dataset preprocessed\n")
+if process_images:
+    preprocess_images(output_train_dir)
+    print("Train Dataset preprocessed\n")
 
 # Extract and save histograms and classes from the Train Dataset
 if histograms:
@@ -59,15 +60,30 @@ if histograms:
 test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
+# Encode the classes and compte the class weights
+y_train = y_train.astype(str).str.strip().values  
+y_test = y_test.astype(str).str.strip().values
+label_encoder = LabelEncoder()
+y_train_encoded = label_encoder.fit_transform(y_train)  
+y_test_encoded = label_encoder.transform(y_test)  
+classes = np.unique(y_train_encoded)
+class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train_encoded)
+class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
+
+# Stampa per debug
+# print("Mappatura Classi:", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
+# print("Pesi delle Classi:", class_weight_dict)
+
 # Train and evaluate model the model
-model, label_encoder = train_model(train_data_csv)
+model = train_model(X_train, y_train_encoded, class_weight_dict) 
+cv_scores = cross_val_score(model, X_train, y_train_encoded, cv=5)
 metrics = evaluate_model(
     model,
     X_test,
-    label_encoder.transform(y_test),
+    y_test_encoded,  
     label_encoder,
     model_statistics_path
-    )
+)
 
 # Save model and encoder 
 dump(model, model_path)
@@ -105,10 +121,17 @@ for image_name in os.listdir(cropped_folder):
             test_data.append(histogram)
             image_names.append(image_name)
 column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
-test_data_df = pd.DataFrame(test_data, columns=column_names)
+image_data_df = pd.DataFrame(test_data, columns=column_names)
 
 # Classify the cropped images and save the results
-predicted_labels = classify_data(model, label_encoder, test_data_df)
+model = load(model_path)
+with open(encoder_path, 'rb') as f:
+    label_encoder = pickle.load(f)
+
+# Classifica le immagini croppate
+predicted_labels = classify_data(model, label_encoder, image_data_df)
+
+# Salva i risultati
 results_df = pd.DataFrame({
     'Image': image_names,
     'PredictedLabel': predicted_labels
