@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 from joblib import dump, load
 import pickle
+import gdown
+import zipfile
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.utils.class_weight import compute_class_weight
@@ -14,24 +16,34 @@ from color_class import train_model, classify_data, evaluate_model
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
+download_dataset = False
 histograms = True
 process_images = False
 
+# Dataset Google Drive link
+FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot"  # Sostituisci con il tuo ID #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
+OUTPUT_ZIP = "dataset.zip"
+EXTRACT_FOLDER = "MonsterDataset"
+
 # PATHS 
-train_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/Monster_energy_drink/train"  
-test_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/Monster_energy_drink/test"
-output_train_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/DatasetInference/train" 
-output_test_dir = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/DatasetInference/test"
+# Change these paths to the correct ones
+root_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject"
+repo_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
 
-output_results = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results"
-model_statistics_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/model_statistics.txt"
-model_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/trained_model.joblib"
-encoder_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/ModelResults/label_encoder.pkl"
+train_dir = os.path.join(root_path, "Monster_energy_drink/train")
+test_dir = os.path.join(root_path, "Monster_energy_drink/test")
+output_train_dir = os.path.join(root_path, "DatasetInference/train")
+output_test_dir = os.path.join(root_path, "DatasetInference/test")
 
-images_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/images"
-output_folder = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
+output_results = os.path.join(repo_path, "Results")
+model_statistics_path = os.path.join(repo_path, "ModelResults/model_statistics.txt")
+model_path = os.path.join(repo_path, "ModelResults/trained_model.joblib")
+encoder_path = os.path.join(repo_path, "ModelResults/label_encoder.pkl")
 
-image_name = "monster_wall.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+images_folder = os.path.join(repo_path, "images")
+output_folder = repo_path
+
+image_name = "tris1.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
@@ -39,13 +51,24 @@ if dataset:
     print("Train Dataset created\n")
     process_dataset(test_dir, output_test_dir)
     print("Test Dataset created\n")
+if download_dataset:
+    if not os.path.exists(OUTPUT_ZIP):
+        print("Downloading dataset...")
+        gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", OUTPUT_ZIP, quiet=False)
+    if not os.path.exists(EXTRACT_FOLDER):
+        print("Extracting dataset...")
+        with zipfile.ZipFile(OUTPUT_ZIP, 'r') as zip_ref:
+            zip_ref.extractall(EXTRACT_FOLDER)
+    output_train_dir = os.path.join(root_path, "MonsterDataset/DatasetInference/train")
+    output_test_dir = os.path.join(root_path, "MonsterDataset/DatasetInference/test")
+    print("Dataset downloaded and extracted\n")
 if process_images:
     preprocess_images(output_train_dir)
     print("Train Dataset preprocessed\n")
 
 # Extract and save histograms and classes from the Train Dataset
 if histograms:
-    train_data, train_labels, train_column_names = create_histograms(train_dir)
+    train_data, train_labels, train_column_names = create_histograms(output_train_dir)
     output_train_df = pd.DataFrame(train_data, columns=train_column_names)
     output_train_df['Label'] = train_labels
     output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv", index=False)
@@ -53,7 +76,7 @@ train_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~
 X_train, y_train = train_data_csv.drop(columns=['Label']), train_data_csv['Label']
 
 if histograms:
-    test_data, test_labels, test_column_names = create_histograms(test_dir)
+    test_data, test_labels, test_column_names = create_histograms(output_test_dir)
     output_test_df = pd.DataFrame(test_data, columns=test_column_names)
     output_test_df['Label'] = test_labels
     output_test_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv", index=False)
@@ -71,8 +94,8 @@ class_weights = compute_class_weight(class_weight='balanced', classes=classes, y
 class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
 
 # Stampa per debug
-# print("Mappatura Classi:", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
-# print("Pesi delle Classi:", class_weight_dict)
+print("Mappatura Classi:", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
+print("Pesi delle Classi:", class_weight_dict)
 
 # Train and evaluate model the model
 model = train_model(X_train, y_train_encoded, class_weight_dict) 
