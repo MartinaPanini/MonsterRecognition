@@ -1,5 +1,5 @@
-Image,PredictedLabel
-tris1_crop1.png,ultra watermelon
-tris1_crop0.png,ultra watermelon
-tris1_crop2.png,ultra black
-tris1_crop3.png,ultra sunrise
+Image,PredictedLabel,TextFilter,Text,TextAccuracy
+tris1_crop1.png,nitro cosmic peach,,,
+tris1_crop0.png,ultra red,,,
+tris1_crop2.png,nitro cosmic peach,,,
+tris1_crop3.png,java salted caramel,,,

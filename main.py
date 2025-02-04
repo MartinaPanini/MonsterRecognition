@@ -14,7 +14,7 @@ from run_inference import process_dataset, run_inference_and_draw
 from preprocess_images import preprocess_images
 from histograms import extract_features, create_histograms
 from color_class import train_model, classify_data, evaluate_model
-from text_detection import text_recognition
+from text_detection import text_classification
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
@@ -131,9 +131,10 @@ cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
 out_image = os.path.join(output_results, "ImageBounded.png")
 image_path = os.path.join(images_folder, image_name)
+print(f"\nRunning inference on image: {image_path}")
 if not os.path.exists(image_path):
     raise FileNotFoundError(f"The image at path {image_path} does not exist.")
-print(f"\nRunning inference on image: {image_path}")
+
 
 run_inference_and_draw(image_path, out_image)
 for file_name in os.listdir(cropped_folder):
@@ -151,7 +152,7 @@ image_names = []
 for image_name in os.listdir(cropped_folder):
     image_path = os.path.join(cropped_folder, image_name)
     if image_name.lower().endswith(('.jpg', '.png', '.jpeg')):
-        histogram = create_histograms(image_path, bins=32)
+        histogram = extract_features(image_path, bins=32)
         if histogram:  # Verifica che l'istogramma non sia vuoto
             test_data.append(histogram)
             image_names.append(image_name)
@@ -167,28 +168,25 @@ print(f"\nLoaded model and encoder from {model_path} and {encoder_path}")
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
+text_results = []
+for img_name in image_names:
+    img_path = os.path.join(cropped_folder, img_name)
+    try:
+        # text_classification legge l'immagine internamente e restituisce informazioni
+        text_info = text_classification(img_path)
+        text_results.append(text_info)
+    except Exception as e:
+        print(f"Errore durante il riconoscimento del testo per {img_name}: {e}")
+        text_results.append({'Filter': None, 'Text': None, 'Accuracy': 0})
 results_df = pd.DataFrame({
     'Image': image_names,
-    'PredictedLabel': predicted_labels
+    'PredictedLabel': predicted_labels,
+    'TextFilter': [tr['Filter'] if isinstance(tr, dict) else None for tr in text_results],
+    'Text': [tr['Text'] if isinstance(tr, dict) else None for tr in text_results],
+    'TextAccuracy': [tr['Accuracy'] if isinstance(tr, dict) else None for tr in text_results]
 })
-for image in cropped_folder:
-    image_path = os.path.join(cropped_folder, image)
-    text_labels = text_recognition(image_path)
-    results_df['Text'] = text_labels[1,2]
-true_labels = []
-for image_name in image_names:
-    for root, dirs, files in os.walk(train_dir):
-        if image_name in files:
-            true_labels.append(os.path.basename(root))
-            break
-accuracy = accuracy_score(true_labels, predicted_labels)
-print(f"\nAccuracy: {accuracy * 100:.2f}%")
-
-# Salva i risultati della classificazione
-accuracy_row = pd.DataFrame([{'Image': 'ColorAccuracy', 'PredictedLabel': '', 'TrueLabel': '', 'Correct': accuracy}])
-results_df = pd.concat([results_df, accuracy_row], ignore_index=True)
-results_df = results_df[[{'Image', 'PredictedLabel', 'TrueLabel', 'Correct', 'Text': text_labels}]]
-print(f"Classification Results:\n{results_df}")
+print("\nColor Classification and Text Recognition Results:")
+print(results_df)
 
 results_path = os.path.join(output_results, "classification_results.csv")
 results_df.to_csv(results_path, index=False)
