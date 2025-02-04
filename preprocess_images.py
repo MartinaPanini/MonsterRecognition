@@ -47,7 +47,15 @@ def preprocess_images(dataset_path):
         ksize = random.choice([(3, 3), (5, 5), (7, 7)])
         filtered = cv2.GaussianBlur(adjusted, ksize, 0)
 
-        return filtered
+        # Denoising 
+        denoised = cv2.fastNlMeansDenoisingColored(filtered, None, h=10, hColor=10, templateWindowSize=7, searchWindowSize=21)
+
+        # Normalizing luminance and contrast
+        img_yuv = cv2.cvtColor(denoised, cv2.COLOR_BGR2YUV)
+        img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])  # Equalizzazione dell'istogramma sul canale Y (luminosità)
+        normalized = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+
+        return normalized
 
     # Process selected images
     for image_file in selected_images:
@@ -60,5 +68,6 @@ def preprocess_images(dataset_path):
             new_filename = 'M_' + filename
             new_image_path = os.path.join(directory, new_filename)
             # Save the processed image
+            print(f"Saving processed image: {new_image_path}")
             cv2.imwrite(new_image_path, processed_image)
         

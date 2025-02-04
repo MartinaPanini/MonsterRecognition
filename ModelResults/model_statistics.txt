@@ -1,46 +1,46 @@
-Accuracy: 86.94%
+Accuracy: 87.00%
 
 Classification Report:
                          precision    recall  f1-score   support
 
                 Assault       1.00      1.00      1.00        13
-        Aussie Lemonade       0.65      0.85      0.74        55
+        Aussie Lemonade       0.69      0.60      0.64        55
                Espresso       1.00      1.00      1.00        13
-                 Import       0.95      1.00      0.97        37
+                 Import       0.97      1.00      0.99        37
        Java Triple Shot       1.00      1.00      1.00        55
-                Khaotic       0.98      1.00      0.99        50
-         Lewis Hamilton       1.00      1.00      1.00        17
+                Khaotic       0.94      1.00      0.97        50
+         Lewis Hamilton       0.85      1.00      0.92        17
                   MIXXD       0.97      1.00      0.98        32
                    MULE       1.00      1.00      1.00        84
-             Mango Loco       0.62      0.81      0.70        48
+             Mango Loco       0.48      0.81      0.60        48
                 Monarch       0.98      1.00      0.99        53
-      Orange Dreamsicle       0.98      1.00      0.99        94
-         Original green       0.58      0.76      0.66        41
-          Pacific Punch       0.69      0.56      0.62        43
-         Pipeline Punch       0.95      1.00      0.97        37
-        Rehab Peach Tea       0.99      1.00      0.99        86
-             Super Fuel       0.97      1.00      0.98        91
+      Orange Dreamsicle       1.00      1.00      1.00        94
+         Original green       0.75      0.73      0.74        41
+          Pacific Punch       0.78      0.67      0.72        43
+         Pipeline Punch       1.00      1.00      1.00        37
+        Rehab Peach Tea       0.98      1.00      0.99        86
+             Super Fuel       0.99      1.00      0.99        91
                   Ultra       1.00      1.00      1.00        42
-           Ultra Citron       0.98      1.00      0.99       107
- Ultra Fantasy Ruby Red       0.94      1.00      0.97        60
-     Ultra Fiesta Mango       0.90      1.00      0.95        35
-         Ultra Paradise       1.00      1.00      1.00        33
-             Zero Sugar       1.00      1.00      1.00        18
-    java salted caramel       0.79      0.73      0.76        30
-                lo carb       0.66      0.63      0.64        46
-     nitro cosmic peach       0.77      0.79      0.78        29
-        nitro super dry       0.81      0.56      0.67        39
-           tea lemonade       0.50      0.11      0.18         9
-            ultra black       0.43      0.17      0.24        18
-             ultra blue       1.00      0.67      0.80        36
-             ultra gold       0.80      0.46      0.59        26
-      ultra peachy keen       0.80      0.84      0.82        57
-              ultra red       0.67      0.52      0.59        23
-             ultra rosa       0.92      0.77      0.84        62
-ultra strawberry dreams       0.93      0.54      0.68        26
-          ultra sunrise       0.71      0.75      0.73        36
-           ultra violet       0.89      0.80      0.85        41
-       ultra watermelon       0.46      0.72      0.56        39
+           Ultra Citron       0.99      1.00      1.00       107
+ Ultra Fantasy Ruby Red       0.90      1.00      0.94        60
+     Ultra Fiesta Mango       0.95      1.00      0.97        35
+         Ultra Paradise       0.89      1.00      0.94        33
+             Zero Sugar       0.90      1.00      0.95        18
+    java salted caramel       0.66      0.83      0.74        30
+                lo carb       0.67      0.70      0.68        46
+     nitro cosmic peach       0.62      0.69      0.66        29
+        nitro super dry       0.56      0.62      0.59        39
+           tea lemonade       0.67      0.22      0.33         9
+            ultra black       0.45      0.28      0.34        18
+             ultra blue       1.00      0.61      0.76        36
+             ultra gold       1.00      0.31      0.47        26
+      ultra peachy keen       0.92      0.82      0.87        57
+              ultra red       0.70      0.61      0.65        23
+             ultra rosa       0.95      0.90      0.93        62
+ultra strawberry dreams       0.78      0.69      0.73        26
+          ultra sunrise       0.70      0.78      0.74        36
+           ultra violet       0.83      0.71      0.76        41
+       ultra watermelon       0.73      0.69      0.71        39
 
                accuracy                           0.87      1661
               macro avg       0.85      0.82      0.82      1661

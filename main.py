@@ -7,21 +7,24 @@ import pickle
 import gdown
 import zipfile
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.utils.class_weight import compute_class_weight
 from run_inference import process_dataset, run_inference_and_draw
 from preprocess_images import preprocess_images
-from histograms import extract_histogram, create_histograms
+from histograms import extract_features, create_histograms
 from color_class import train_model, classify_data, evaluate_model
+from text_detection import text_recognition
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
 download_dataset = False
-histograms = True
+histograms = False
 process_images = False
+force_grid_search = False
 
 # Dataset Google Drive link
-FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot"  # Sostituisci con il tuo ID #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
+FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot" #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
 OUTPUT_ZIP = "dataset.zip"
 EXTRACT_FOLDER = "MonsterDataset"
 
@@ -40,6 +43,10 @@ model_statistics_path = os.path.join(repo_path, "ModelResults/model_statistics.t
 model_path = os.path.join(repo_path, "ModelResults/trained_model.joblib")
 encoder_path = os.path.join(repo_path, "ModelResults/label_encoder.pkl")
 
+best_params_path = os.path.join(repo_path, "ModelResults/best_params.json")
+if force_grid_search and os.path.exists(best_params_path):
+    os.remove(best_params_path)
+
 images_folder = os.path.join(repo_path, "images")
 output_folder = repo_path
 
@@ -48,7 +55,7 @@ image_name = "tris1.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
     process_dataset(train_dir, output_train_dir)
-    print("Train Dataset created\n")
+    print("Train Dataset created")
     process_dataset(test_dir, output_test_dir)
     print("Test Dataset created\n")
 if download_dataset:
@@ -72,6 +79,7 @@ if histograms:
     output_train_df = pd.DataFrame(train_data, columns=train_column_names)
     output_train_df['Label'] = train_labels
     output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv", index=False)
+    print("Train Dataset histograms extracted")
 train_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv")
 X_train, y_train = train_data_csv.drop(columns=['Label']), train_data_csv['Label']
 
@@ -80,6 +88,7 @@ if histograms:
     output_test_df = pd.DataFrame(test_data, columns=test_column_names)
     output_test_df['Label'] = test_labels
     output_test_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv", index=False)
+    print("Test Dataset histograms extracted\n")
 test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
@@ -87,18 +96,18 @@ X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 y_train = y_train.astype(str).str.strip().values  
 y_test = y_test.astype(str).str.strip().values
 label_encoder = LabelEncoder()
-y_train_encoded = label_encoder.fit_transform(y_train)  
-y_test_encoded = label_encoder.transform(y_test)  
+y_train_encoded = label_encoder.fit_transform(pd.Series(y_train).str.strip().values)
+y_test_encoded = label_encoder.fit_transform(pd.Series(y_test).str.strip().values)
 classes = np.unique(y_train_encoded)
 class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train_encoded)
 class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
 
-# Stampa per debug
-print("Mappatura Classi:", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
-print("Pesi delle Classi:", class_weight_dict)
+#Stampa per debug
+print("Mappatura Classi:\n", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
+print("\nPesi delle Classi:\n", class_weight_dict)
 
 # Train and evaluate model the model
-model = train_model(X_train, y_train_encoded, class_weight_dict) 
+model = train_model(X_train, y_train_encoded, class_weight_dict, path=best_params_path) 
 cv_scores = cross_val_score(model, X_train, y_train_encoded, cv=5)
 metrics = evaluate_model(
     model,
@@ -107,6 +116,8 @@ metrics = evaluate_model(
     label_encoder,
     model_statistics_path
 )
+print(f"\nModel Statistics: {metrics}")
+print(f"Cross-Validation Scores: {cv_scores}")
 
 # Save model and encoder 
 dump(model, model_path)
@@ -122,6 +133,7 @@ out_image = os.path.join(output_results, "ImageBounded.png")
 image_path = os.path.join(images_folder, image_name)
 if not os.path.exists(image_path):
     raise FileNotFoundError(f"The image at path {image_path} does not exist.")
+print(f"\nRunning inference on image: {image_path}")
 
 run_inference_and_draw(image_path, out_image)
 for file_name in os.listdir(cropped_folder):
@@ -139,26 +151,45 @@ image_names = []
 for image_name in os.listdir(cropped_folder):
     image_path = os.path.join(cropped_folder, image_name)
     if image_name.lower().endswith(('.jpg', '.png', '.jpeg')):
-        histogram = extract_histogram(image_path, bins=32)
+        histogram = create_histograms(image_path, bins=32)
         if histogram:  # Verifica che l'istogramma non sia vuoto
             test_data.append(histogram)
             image_names.append(image_name)
 column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
-image_data_df = pd.DataFrame(test_data, columns=column_names)
+image_data_df = pd.DataFrame(test_data)
+print(f"\nClassifying {len(image_names)} cropped images")
 
 # Classify the cropped images and save the results
 model = load(model_path)
 with open(encoder_path, 'rb') as f:
     label_encoder = pickle.load(f)
+print(f"\nLoaded model and encoder from {model_path} and {encoder_path}")
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
-
-# Salva i risultati
 results_df = pd.DataFrame({
     'Image': image_names,
     'PredictedLabel': predicted_labels
 })
+for image in cropped_folder:
+    image_path = os.path.join(cropped_folder, image)
+    text_labels = text_recognition(image_path)
+    results_df['Text'] = text_labels[1,2]
+true_labels = []
+for image_name in image_names:
+    for root, dirs, files in os.walk(train_dir):
+        if image_name in files:
+            true_labels.append(os.path.basename(root))
+            break
+accuracy = accuracy_score(true_labels, predicted_labels)
+print(f"\nAccuracy: {accuracy * 100:.2f}%")
+
+# Salva i risultati della classificazione
+accuracy_row = pd.DataFrame([{'Image': 'ColorAccuracy', 'PredictedLabel': '', 'TrueLabel': '', 'Correct': accuracy}])
+results_df = pd.concat([results_df, accuracy_row], ignore_index=True)
+results_df = results_df[[{'Image', 'PredictedLabel', 'TrueLabel', 'Correct', 'Text': text_labels}]]
+print(f"Classification Results:\n{results_df}")
+
 results_path = os.path.join(output_results, "classification_results.csv")
 results_df.to_csv(results_path, index=False)
 
