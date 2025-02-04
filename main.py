@@ -116,8 +116,6 @@ metrics = evaluate_model(
     label_encoder,
     model_statistics_path
 )
-print(f"\nModel Statistics: {metrics}")
-print(f"Cross-Validation Scores: {cv_scores}")
 
 # Save model and encoder 
 dump(model, model_path)
@@ -131,10 +129,8 @@ cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
 out_image = os.path.join(output_results, "ImageBounded.png")
 image_path = os.path.join(images_folder, image_name)
-print(f"\nRunning inference on image: {image_path}")
 if not os.path.exists(image_path):
     raise FileNotFoundError(f"The image at path {image_path} does not exist.")
-
 
 run_inference_and_draw(image_path, out_image)
 for file_name in os.listdir(cropped_folder):
@@ -158,13 +154,11 @@ for image_name in os.listdir(cropped_folder):
             image_names.append(image_name)
 column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
 image_data_df = pd.DataFrame(test_data)
-print(f"\nClassifying {len(image_names)} cropped images")
 
 # Classify the cropped images and save the results
 model = load(model_path)
 with open(encoder_path, 'rb') as f:
     label_encoder = pickle.load(f)
-print(f"\nLoaded model and encoder from {model_path} and {encoder_path}")
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
