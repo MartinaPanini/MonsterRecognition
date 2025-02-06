@@ -72,8 +72,7 @@ def text_recognition(image):
     
     monster_type = " ".join(monster_type)
     monster_type = ' '.join([parola for parola in monster_type.split() if len(parola) > 2])
-    num_words = len(monster_type.split())
-    print(monster_type)
+
     # Liste dei nomi validi
     valid_strings = ['Assault', 'Aussie Lemonade', 'Espresso', 'Import', 'Java Triple Shot', 'Khaotic', 'Lewis Hamilton', 'MIXXD', 
                      'MULE', 'Mango Loco', 'Monarch', 'Orange Dreamsicle', 'Original green', 'Pacific Punch', 'Pipeline Punch',
