@@ -32,7 +32,7 @@ EXTRACT_FOLDER = "MonsterDataset"
 # Change these paths to the correct ones
 root_path = "/home/alejandro/Desktop/Projects/signals"
 repo_path = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition"
-'''
+
 train_dir = os.path.join(root_path, "Monster_energy_drink/train")
 test_dir = os.path.join(root_path, "Monster_energy_drink/test")
 output_train_dir = os.path.join(root_path, "DatasetInference/train")
@@ -125,7 +125,7 @@ with open(encoder_path, 'wb') as f:
 # Load image to recognize and run inference on the image (create bounding boxes of cans)
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-'''
+
 images_folder = os.path.join(repo_path, "images")
 output_folder = repo_path
 output_results = os.path.join(repo_path, "Results")
@@ -160,7 +160,7 @@ for image_name in os.listdir(cropped_folder):
             image_names.append(image_name)
 column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
 image_data_df = pd.DataFrame(test_data)
-'''
+
 # Classify the cropped images and save the results
 model = load(model_path)
 with open(encoder_path, 'rb') as f:
@@ -168,7 +168,7 @@ with open(encoder_path, 'rb') as f:
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
-'''
+
 text_results = pd.DataFrame(columns=['Filter','Text','Accuracy'])
 i = 0
 for img_name in image_names:
