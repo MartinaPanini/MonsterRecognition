@@ -18,7 +18,7 @@ from text_detection import text_classification
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
-download_dataset = False
+download_dataset = True
 histograms = False
 process_images = False
 force_grid_search = False
@@ -32,7 +32,7 @@ EXTRACT_FOLDER = "MonsterDataset"
 # Change these paths to the correct ones
 root_path = "/home/alejandro/Desktop/Projects/signals"
 repo_path = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition"
-
+'''
 train_dir = os.path.join(root_path, "Monster_energy_drink/train")
 test_dir = os.path.join(root_path, "Monster_energy_drink/test")
 output_train_dir = os.path.join(root_path, "DatasetInference/train")
@@ -50,7 +50,7 @@ if force_grid_search and os.path.exists(best_params_path):
 images_folder = os.path.join(repo_path, "images")
 output_folder = repo_path
 
-image_name = "tris1.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+image_name = "tris2.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
@@ -125,6 +125,11 @@ with open(encoder_path, 'wb') as f:
 # Load image to recognize and run inference on the image (create bounding boxes of cans)
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
+'''
+images_folder = os.path.join(repo_path, "images")
+output_folder = repo_path
+output_results = os.path.join(repo_path, "Results")
+image_name = "tris2.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
@@ -155,7 +160,7 @@ for image_name in os.listdir(cropped_folder):
             image_names.append(image_name)
 column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
 image_data_df = pd.DataFrame(test_data)
-
+'''
 # Classify the cropped images and save the results
 model = load(model_path)
 with open(encoder_path, 'rb') as f:
@@ -163,7 +168,7 @@ with open(encoder_path, 'rb') as f:
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
-
+'''
 text_results = pd.DataFrame(columns=['Filter','Text','Accuracy'])
 i = 0
 for img_name in image_names:
@@ -179,7 +184,7 @@ for img_name in image_names:
 
 results_df = pd.DataFrame({
     'Image': image_names,
-    'PredictedLabel': predicted_labels,
+    #'PredictedLabel': predicted_labels,
     'TextFilter':text_results['Filter'],
     'Text': text_results['Text'],
     'TextAccuracy': text_results['Accuracy']

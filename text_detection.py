@@ -71,7 +71,9 @@ def text_recognition(image):
                 cv2.putText(img, text, top_left, cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 3)  # Testo giallo più grande
     
     monster_type = " ".join(monster_type)
-    
+    monster_type = ' '.join([parola for parola in monster_type.split() if len(parola) > 2])
+    num_words = len(monster_type.split())
+    print(monster_type)
     # Liste dei nomi validi
     valid_strings = ['Assault', 'Aussie Lemonade', 'Espresso', 'Import', 'Java Triple Shot', 'Khaotic', 'Lewis Hamilton', 'MIXXD', 
                      'MULE', 'Mango Loco', 'Monarch', 'Orange Dreamsicle', 'Original green', 'Pacific Punch', 'Pipeline Punch',
@@ -80,7 +82,16 @@ def text_recognition(image):
                      'tea lemonade', 'ultra black', 'ultra blue', 'ultra gold', 'ultra peachy keen', 'ultra red', 'ultra rosa', 
                      'ultra strawberry dreams', 'ultra sunrise', 'ultra violet','ultra watermelon'
                      ]
+    valid_strings = ['Assault', 'Aussie Lemonade', 'Espresso', 'Import', 'Java Triple Shot', 'Khaotic', 'Lewis Hamilton', 'MIXXD', 
+                    'MULE', 'Mango Loco', 'Monarch', 'Orange Dreamsicle', 'Original green', 'Pacific Punch', 'Pipeline Punch',
+                    'Rehab Peach Tea', 'Super Fuel', 'Citron', 'Fantasy Ruby Red', 'Fiesta Mango', 
+                    'Paradise','Zero Sugar', 'java salted caramel', 'lo carb', 'nitro cosmic peach', 'nitro super dry',
+                    'tea lemonade', 'black', 'blue', 'golden pineapple', 'peachy keen', 'red', 'rosa', 
+                    'strawberry dreams', 'sunrise', 'violet','watermelon'
+                    ]
     valid_strings = [s.upper() for s in valid_strings]
+
+    monster_type = [s.upper() for s in monster_type]
 
     # Trova la stringa più simile tra le valide
     match = process.extractOne(monster_type, valid_strings)
