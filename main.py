@@ -18,8 +18,8 @@ from text_detection import text_classification
 
 # Set this to True to create the dataset and preprocess it
 dataset = False
-download_dataset = True
-histograms = False
+download_dataset = False
+histograms = True
 process_images = False
 force_grid_search = False
 
@@ -30,8 +30,8 @@ EXTRACT_FOLDER = "MonsterDataset"
 
 # PATHS 
 # Change these paths to the correct ones
-root_path = "/home/alejandro/Desktop/Projects/signals"
-repo_path = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition"
+root_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject"
+repo_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
 
 train_dir = os.path.join(root_path, "Monster_energy_drink/train")
 test_dir = os.path.join(root_path, "Monster_energy_drink/test")
@@ -76,11 +76,16 @@ if process_images:
 # Extract and save histograms and classes from the Train Dataset
 if histograms:
     train_data, train_labels, train_column_names = create_histograms(output_train_dir)
+    train_data = [item[0] if isinstance(item[0], list) else item for item in train_data]
+    print(f"Tipo di train_data: {type(train_data)}")
+    print(f"Tipo del primo elemento di train_data: {type(train_data[0])}")
+    print(f"Lunghezza del primo elemento di train_data: {len(train_data[0])}")
+
     output_train_df = pd.DataFrame(train_data, columns=train_column_names)
     output_train_df['Label'] = train_labels
     output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv", index=False)
     print("Train Dataset histograms extracted")
-train_data_csv = pd.read_csv("/home/alejandro/Desktop/Projects/signals/MonsterRecognition/Results/train_histograms_features.csv")
+train_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv")
 X_train, y_train = train_data_csv.drop(columns=['Label']), train_data_csv['Label']
 
 if histograms:
@@ -89,7 +94,7 @@ if histograms:
     output_test_df['Label'] = test_labels
     output_test_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv", index=False)
     print("Test Dataset histograms extracted\n")
-test_data_csv = pd.read_csv("/home/alejandro/Desktop/Projects/signals/MonsterRecognition/Results/test_histograms_features.csv")
+test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
 # Encode the classes and compte the class weights

@@ -1,5 +1,4 @@
-Image,PredictedLabel,TextFilter,Text,TextAccuracy
-tris1_crop1.png,nitro cosmic peach,,,
-tris1_crop0.png,ultra red,,,
-tris1_crop2.png,nitro cosmic peach,,,
-tris1_crop3.png,java salted caramel,,,
+Image,TextFilter,Text,TextAccuracy
+tris2_crop0.png,Original Image,GOLDEN PINEAPPLE,73.6842105263158
+tris2_crop1.png,Original Image,FIESTA MANGO,75.00000000000001
+tris2_crop2.png,Original Image,RED,60.00000000000001
