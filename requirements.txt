@@ -12,3 +12,6 @@ supervision
 inference
 nbimporter
 nbformat
+gdown
+rapidfuzz 
+easyocr

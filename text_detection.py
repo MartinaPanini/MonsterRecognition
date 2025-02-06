@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import easyocr
 import numpy as np
 import pandas as pd
-import os
-import glob
 
 def median_filter(data, filter_size):
     temp = []
@@ -167,5 +165,6 @@ def text_classification(image_path):
     df = pd.DataFrame(results)
     df = df[df['Accuracy'] != 0]
     df = df.sort_values(by='Accuracy', ascending=False)
-
-    return df.loc[0]
+    df = pd.DataFrame([{'Filter': df['Filter'][0], 'Text': df['Text'][0], 'Accuracy': df['Accuracy'][0]}])
+    
+    return df

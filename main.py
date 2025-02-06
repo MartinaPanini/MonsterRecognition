@@ -30,8 +30,8 @@ EXTRACT_FOLDER = "MonsterDataset"
 
 # PATHS 
 # Change these paths to the correct ones
-root_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject"
-repo_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
+root_path = "/home/alejandro/Desktop/Projects/signals"
+repo_path = "/home/alejandro/Desktop/Projects/signals/MonsterRecognition"
 
 train_dir = os.path.join(root_path, "Monster_energy_drink/train")
 test_dir = os.path.join(root_path, "Monster_energy_drink/test")
@@ -80,7 +80,7 @@ if histograms:
     output_train_df['Label'] = train_labels
     output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv", index=False)
     print("Train Dataset histograms extracted")
-train_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv")
+train_data_csv = pd.read_csv("/home/alejandro/Desktop/Projects/signals/MonsterRecognition/Results/train_histograms_features.csv")
 X_train, y_train = train_data_csv.drop(columns=['Label']), train_data_csv['Label']
 
 if histograms:
@@ -89,7 +89,7 @@ if histograms:
     output_test_df['Label'] = test_labels
     output_test_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv", index=False)
     print("Test Dataset histograms extracted\n")
-test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
+test_data_csv = pd.read_csv("/home/alejandro/Desktop/Projects/signals/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
 # Encode the classes and compte the class weights
@@ -125,6 +125,7 @@ with open(encoder_path, 'wb') as f:
 # Load image to recognize and run inference on the image (create bounding boxes of cans)
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
+
 cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
 out_image = os.path.join(output_results, "ImageBounded.png")
@@ -162,22 +163,26 @@ with open(encoder_path, 'rb') as f:
 
 # Classifica le immagini croppate
 predicted_labels = classify_data(model, label_encoder, image_data_df)
-text_results = []
+
+text_results = pd.DataFrame(columns=['Filter','Text','Accuracy'])
+i = 0
 for img_name in image_names:
     img_path = os.path.join(cropped_folder, img_name)
     try:
         # text_classification legge l'immagine internamente e restituisce informazioni
         text_info = text_classification(img_path)
-        text_results.append(text_info)
+        text_results.loc[i] = text_info.iloc[0]
     except Exception as e:
         print(f"Errore durante il riconoscimento del testo per {img_name}: {e}")
-        text_results.append({'Filter': None, 'Text': None, 'Accuracy': 0})
+        text_results.loc[i] = ({'Filter': None, 'Text': None, 'Accuracy': 0})
+    i += 1
+
 results_df = pd.DataFrame({
     'Image': image_names,
     'PredictedLabel': predicted_labels,
-    'TextFilter': [tr['Filter'] if isinstance(tr, dict) else None for tr in text_results],
-    'Text': [tr['Text'] if isinstance(tr, dict) else None for tr in text_results],
-    'TextAccuracy': [tr['Accuracy'] if isinstance(tr, dict) else None for tr in text_results]
+    'TextFilter':text_results['Filter'],
+    'Text': text_results['Text'],
+    'TextAccuracy': text_results['Accuracy']
 })
 print("\nColor Classification and Text Recognition Results:")
 print(results_df)
