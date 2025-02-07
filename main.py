@@ -19,10 +19,10 @@ from color_class import train_model, classify_data, evaluate_model
 from text_detection import text_classification
 
 # Set this to True to create the dataset and preprocess it
-dataset = True
-download_dataset = True
-histograms = True
-process_images = True
+dataset = False
+download_dataset = False
+histograms = False
+process_images = False
 
 # Dataset Google Drive link
 FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot" #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
@@ -48,7 +48,7 @@ images_folder = os.path.join(repo_path, "images")
 output_folder = repo_path
 cropped_folder = os.path.join(output_folder, "ImageCropped")    
 
-image_name = "monster_wall8.JPG"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+image_name = "tris1.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
@@ -91,7 +91,7 @@ if histograms:
 test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
-# Standardizzazione dei dati
+# Standardize the data
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
@@ -221,4 +221,15 @@ print(highest_accuracy_labels)
 # Compare cans in the dataset with the predicted labels
 true_labels = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
 missing_labels = set(true_labels) - set(predicted_labels)
-print(f"\nMISSING MOSTER ARE: {missing_labels}\n")
+print(f"\nMISSING MONSTER ARE: {missing_labels}\n")
+
+# Save results to a text file
+results_text_path = os.path.join(output_results, "classification_results.txt")
+with open(results_text_path, 'w') as f:
+    f.write("\nCOLOR AND TEXT CLASSIFICATION RESULTS:\n")
+    f.write("IMAGE: ".join(image_name) + "\n")
+    f.write(results_df.to_string() + "\n")
+    f.write("MONSTER THAT YOU HAVE:\n")
+    f.write("\n".join(highest_accuracy_labels) + "\n")
+    f.write("\nMISSING MONSTER ARE:\n")
+    f.write(", ".join(missing_labels) + "\n")

@@ -1,0 +1,14 @@
+
+COLOR AND TEXT CLASSIFICATION RESULTS:
+tIMAGE: rIMAGE: iIMAGE: sIMAGE: 1IMAGE: _IMAGE: cIMAGE: rIMAGE: oIMAGE: pIMAGE: 2IMAGE: .IMAGE: pIMAGE: nIMAGE: g
+             Image      TextFilter        Text TextAccuracy  Color Prediction  Color Accuracy
+0  tris1_crop1.png  Original Image        MULE         90.0       ultra black           38.97
+1  tris1_crop0.png  Original Image  ZERO SUGAR         85.5  ultra watermelon           57.22
+2  tris1_crop2.png  Original Image       BLACK         90.0       ultra black           66.40
+MONSTER THAT YOU HAVE:
+MULE
+ZERO SUGAR
+BLACK
+
+MISSING MONSTER ARE:
+Rehab Peach Tea, ultra peachy keen, Mango Loco, Zero Sugar, Java Triple Shot, ultra sunrise, Ultra Citron, MIXXD, Super Fuel, Khaotic, Ultra Paradise, Ultra Fantasy Ruby Red, Monarch, Assault, Pacific Punch, nitro cosmic peach, Lewis Hamilton, ultra violet, Ultra, java salted caramel, lo carb, Original green, MULE, ultra strawberry dreams, ultra blue, Aussie Lemonade, ultra rosa, Pipeline Punch, nitro super dry, ultra gold, tea lemonade, ultra red, Orange Dreamsicle, Import, Espresso, Ultra Fiesta Mango

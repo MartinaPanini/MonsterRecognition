@@ -1,24 +1,4 @@
 Image,TextFilter,Text,TextAccuracy,Color Prediction,Color Accuracy
-monster_wall8_crop9.png,Original Image,AUSSIE LEMONADE,58.06451612903225,Aussie Lemonade,22.67
-monster_wall8_crop8.png,Original Image,ZERO SUGAR,85.5,ultra sunrise,27.79
-monster_wall8_crop10.png,Original Image,ZERO SUGAR,85.5,ultra rosa,50.36
-monster_wall8_crop11.png,Original Image,PIPELINE PUNCH,52.61538461538461,java salted caramel,14.67
-monster_wall8_crop13.png,Original Image,WATERMELON,70.0,nitro cosmic peach,16.94
-monster_wall8_crop12.png,Original Image,GOLDEN PINEAPPLE,75.67567567567568,java salted caramel,42.72
-monster_wall8_crop16.png,Original Image,ROSA,60.00000000000001,ultra black,21.8
-monster_wall8_crop17.png,Original Image,ROSA,67.5,ultra sunrise,29.38
-monster_wall8_crop15.png,Original Image,FIESTA MANGO,48.0,nitro cosmic peach,26.25
-monster_wall8_crop14.png,Original Image,PIPELINE PUNCH,75.0,ultra rosa,19.06
-monster_wall8_crop18.png,Original Image,JAVA TRIPLE SHOT,69.0909090909091,java salted caramel,33.56
-monster_wall8_crop23.png,Original Image,RED,36.0,ultra rosa,71.28
-monster_wall8_crop22.png,,,0,ultra black,29.11
-monster_wall8_crop20.png,Original Image,RED,72.0,lo carb,54.64
-monster_wall8_crop21.png,Original Image,MULE,60.00000000000001,java salted caramel,32.49
-monster_wall8_crop3.png,Original Image,ROSA,60.00000000000001,Original green,50.37
-monster_wall8_crop2.png,Original Image,MANGO LOCO,85.5,ultra blue,58.27
-monster_wall8_crop0.png,Original Image,FANTASY RUBY RED,70.0,ultra rosa,62.53
-monster_wall8_crop1.png,Original Image,SUPER FUEL,85.5,lo carb,67.95
-monster_wall8_crop5.png,Original Image,ZERO SUGAR,40.0,ultra red,31.14
-monster_wall8_crop4.png,Original Image,MONARCH,90.0,ultra sunrise,32.13
-monster_wall8_crop6.png,Original Image,ZERO SUGAR,90.0,ultra black,38.16
-monster_wall8_crop7.png,Original Image,KHAOTIC,69.23076923076923,ultra sunrise,17.76
+tris1_crop1.png,Original Image,MULE,90.0,ultra black,38.97
+tris1_crop0.png,Original Image,ZERO SUGAR,85.5,ultra watermelon,57.22
+tris1_crop2.png,Original Image,BLACK,90.0,ultra black,66.4
