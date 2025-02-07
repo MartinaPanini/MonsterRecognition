@@ -6,7 +6,9 @@ from joblib import dump, load
 import pickle
 import gdown
 import zipfile
-from sklearn.preprocessing import LabelEncoder
+from PIL import Image
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.utils.class_weight import compute_class_weight
@@ -19,9 +21,8 @@ from text_detection import text_classification
 # Set this to True to create the dataset and preprocess it
 dataset = False
 download_dataset = False
-histograms = True
+histograms = False
 process_images = False
-force_grid_search = False
 
 # Dataset Google Drive link
 FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot" #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
@@ -43,14 +44,11 @@ model_statistics_path = os.path.join(repo_path, "ModelResults/model_statistics.t
 model_path = os.path.join(repo_path, "ModelResults/trained_model.joblib")
 encoder_path = os.path.join(repo_path, "ModelResults/label_encoder.pkl")
 
-best_params_path = os.path.join(repo_path, "ModelResults/best_params.json")
-if force_grid_search and os.path.exists(best_params_path):
-    os.remove(best_params_path)
-
 images_folder = os.path.join(repo_path, "images")
 output_folder = repo_path
+cropped_folder = os.path.join(output_folder, "ImageCropped")    
 
-image_name = "tris2.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+image_name = "monster_wall8.JPG"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:
@@ -77,10 +75,6 @@ if process_images:
 if histograms:
     train_data, train_labels, train_column_names = create_histograms(output_train_dir)
     train_data = [item[0] if isinstance(item[0], list) else item for item in train_data]
-    print(f"Tipo di train_data: {type(train_data)}")
-    print(f"Tipo del primo elemento di train_data: {type(train_data[0])}")
-    print(f"Lunghezza del primo elemento di train_data: {len(train_data[0])}")
-
     output_train_df = pd.DataFrame(train_data, columns=train_column_names)
     output_train_df['Label'] = train_labels
     output_train_df.to_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/train_histograms_features.csv", index=False)
@@ -97,6 +91,13 @@ if histograms:
 test_data_csv = pd.read_csv("/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition/Results/test_histograms_features.csv")
 X_test, y_test = test_data_csv.drop(columns=['Label']), test_data_csv['Label']
 
+# Standardizzazione dei dati
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+
 # Encode the classes and compte the class weights
 y_train = y_train.astype(str).str.strip().values  
 y_test = y_test.astype(str).str.strip().values
@@ -107,12 +108,11 @@ classes = np.unique(y_train_encoded)
 class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train_encoded)
 class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
 
-#Stampa per debug
-print("Mappatura Classi:\n", dict(zip(label_encoder.classes_, np.unique(y_train_encoded))))
-print("\nPesi delle Classi:\n", class_weight_dict)
-
 # Train and evaluate model the model
-model = train_model(X_train, y_train_encoded, class_weight_dict, path=best_params_path) 
+ros = RandomOverSampler(random_state=42)
+X_train_balanced, y_train_balanced = ros.fit_resample(X_train_scaled, y_train_encoded)
+
+model = train_model(X_train_scaled, y_train_encoded, class_weight_dict=None) 
 cv_scores = cross_val_score(model, X_train, y_train_encoded, cv=5)
 metrics = evaluate_model(
     model,
@@ -131,12 +131,6 @@ with open(encoder_path, 'wb') as f:
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-images_folder = os.path.join(repo_path, "images")
-output_folder = repo_path
-output_results = os.path.join(repo_path, "Results")
-image_name = "tris2.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
-
-cropped_folder = os.path.join(output_folder, "ImageCropped")
 os.makedirs(cropped_folder, exist_ok=True)
 out_image = os.path.join(output_results, "ImageBounded.png")
 image_path = os.path.join(images_folder, image_name)
@@ -152,6 +146,15 @@ for file_name in os.listdir(cropped_folder):
         shutil.rmtree(file_path)
 # Save cropped images from the image loaded
 process_dataset(image_path, cropped_folder)
+# Remove images that are wider than they are tall
+for image_name in os.listdir(cropped_folder):
+    image_path = os.path.join(cropped_folder, image_name)
+    if image_name.lower().endswith(('.jpg', '.png', '.jpeg')):
+        with open(image_path, 'rb') as img_file:
+            img = Image.open(img_file)
+            width, height = img.size
+            if width > height:
+                os.remove(image_path)
 
 # Extrat histrograms from the cropped images and classify them
 test_data = []
@@ -163,8 +166,9 @@ for image_name in os.listdir(cropped_folder):
         if histogram:  # Verifica che l'istogramma non sia vuoto
             test_data.append(histogram)
             image_names.append(image_name)
-column_names = [f'Bin_R{i}' for i in range(1, 33)] + [f'Bin_G{i}' for i in range(1, 33)] + [f'Bin_B{i}' for i in range(1, 33)]
-image_data_df = pd.DataFrame(test_data)
+image_data_df = pd.DataFrame(test_data, columns=X_train.columns)
+image_data_df_scaled = scaler.transform(image_data_df)
+image_data_df_scaled = pd.DataFrame(image_data_df_scaled, columns=X_train.columns)
 
 # Classify the cropped images and save the results
 model = load(model_path)
@@ -172,7 +176,7 @@ with open(encoder_path, 'rb') as f:
     label_encoder = pickle.load(f)
 
 # Classifica le immagini croppate
-predicted_labels = classify_data(model, label_encoder, image_data_df)
+predicted_labels, pred_accuracy, prediction_probs = classify_data(model, label_encoder, image_data_df_scaled)
 
 text_results = pd.DataFrame(columns=['Filter','Text','Accuracy'])
 i = 0
@@ -187,24 +191,34 @@ for img_name in image_names:
         text_results.loc[i] = ({'Filter': None, 'Text': None, 'Accuracy': 0})
     i += 1
 
+
 results_df = pd.DataFrame({
     'Image': image_names,
-    #'PredictedLabel': predicted_labels,
     'TextFilter':text_results['Filter'],
     'Text': text_results['Text'],
-    'TextAccuracy': text_results['Accuracy']
+    'TextAccuracy': text_results['Accuracy'],
+    'Color Prediction': predicted_labels,
+    'Color Accuracy': pred_accuracy
 })
-print("\nColor Classification and Text Recognition Results:")
+print("\nCOLOR AND TEXT CLASSIFICATION RESULTS:")
 print(results_df)
 
 results_path = os.path.join(output_results, "classification_results.csv")
 results_df.to_csv(results_path, index=False)
 
+# Compare text recognition accuracy with color prediction accuracy and print the labels with the highest accuracy
+highest_accuracy_labels = []
+
+for i in range(len(results_df)):
+    if results_df.loc[i, 'TextAccuracy'] > results_df.loc[i, 'Color Accuracy'] and results_df.loc[i, 'TextAccuracy'] > 60:
+        highest_accuracy_labels.append(results_df.loc[i, 'Text'])
+    elif results_df.loc[i, 'Color Accuracy'] > 60:
+        highest_accuracy_labels.append(results_df.loc[i, 'Color Prediction'])
+
+print("\nMONSTER THAT YOU HAVE:")
+print(highest_accuracy_labels)
+
 # Compare cans in the dataset with the predicted labels
 true_labels = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
-num_true_labels = len(true_labels)
-num_predicted_labels = len(set(predicted_labels))
 missing_labels = set(true_labels) - set(predicted_labels)
-print(f"\nMissing Monster's cans: {num_true_labels - num_predicted_labels}")
-print(f"\nYou have: {predicted_labels}")
-print(f"\nMissing Monster are: {missing_labels}\n")
+print(f"\nMISSING MOSTER ARE: {missing_labels}\n")

@@ -76,7 +76,7 @@ def create_histograms(dataset_path, bins=32):
                    [f'Bin_S{i+1}' for i in range(bins)] + \
                    [f'Bin_V{i+1}' for i in range(bins)] + \
                    ['GLCM_Contrast', 'GLCM_Dissimilarity', 'GLCM_Homogeneity', 'GLCM_Energy', 'GLCM_Correlation'] + \
-                   ['Label']
+                    ['Label']
 
     expected_feature_length = len(column_names) - 1  # Exclude 'Label'
 
