@@ -19,10 +19,10 @@ from color_class import train_model, classify_data, evaluate_model
 from text_detection import text_classification
 
 # Set this to True to create the dataset and preprocess it
-dataset = False
-download_dataset = False
-histograms = False
-process_images = False
+dataset = True
+download_dataset = True
+histograms = True
+process_images = True
 
 # Dataset Google Drive link
 FILE_ID = "1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot" #https://drive.google.com/file/d/1Zl8z7pFG6xbdUcioMZrC4dQ70KX5qKot/view?usp=sharing
