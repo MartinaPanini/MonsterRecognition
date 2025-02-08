@@ -5,6 +5,14 @@ import supervision as sv
 import cv2
 
 def run_inference(in_path):
+    """
+    Runs inference on the input image and returns cropped images based on predictions.
+    Args:
+        in_path (str): The file path to the input image.
+    Returns:
+        list: A list of cropped images based on the predictions. Returns None if no predictions are found.
+    """
+
     CLIENT = InferenceHTTPClient(
         api_url="https://detect.roboflow.com",
         api_key="2YoFjYTilm3H760rS15g"
@@ -18,8 +26,7 @@ def run_inference(in_path):
         with Image.open(in_path) as img:
             img.verify()  # Verifica se l'immagine è valida
     except Exception as e:
-        print(f"Errore nel caricamento dell'immagine {in_path}: {e}")
-
+        print(f"Error in loading image {in_path}: {e}")
 
     image_width = result['image']['width']
     image_height = result['image']['height']
@@ -46,6 +53,14 @@ def run_inference(in_path):
     return cropped_images
 
 def run_inference_and_draw(in_path, output_path):
+    """
+    Runs inference on an input image, draws bounding boxes around detected objects, and saves the output image.
+    Args:
+        in_path (str): The file path to the input image.
+        output_path (str): The file path to save the output image with drawn bounding boxes.
+    Returns:
+        None
+    """
     CLIENT = InferenceHTTPClient(
         api_url="https://detect.roboflow.com",
         api_key="2YoFjYTilm3H760rS15g"
@@ -59,10 +74,9 @@ def run_inference_and_draw(in_path, output_path):
     if not result['predictions']:
         print(f"No predictions found for {in_path}!") 
         return
-
-    # Disegno i bounding box sull'immagine
-    draw = ImageDraw.Draw(original_image)
-
+    
+    draw = ImageDraw.Draw(original_image) # Draw bounding box on image
+    print(result)
     for prediction in result['predictions']:
         x = prediction['x']
         y = prediction['y']
@@ -74,25 +88,21 @@ def run_inference_and_draw(in_path, output_path):
         right = min(image_width, x + width / 2)
         bottom = min(image_height, y + height / 2)
 
-        # Disegna il rettangolo (bounding box)
         draw.rectangle([left, top, right, bottom], outline="red", width=3)
 
-        # Aggiungi la probabilità o altra informazione, se disponibile
         confidence = prediction.get('confidence', 0)
         draw.text((left, top - 10), f"{confidence:.2f}", fill="red")
 
-    # Salva l'immagine con i bounding box
     if not os.path.exists(output_path):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
     original_image.save(output_path)
-    #print(f"Immagine con bounding box salvata in {output_path}")
+    #print(f"Image with bounding boxes saved in {output_path}")
 
 
 def process_dataset(input_path, output_dir):
     """
     Processa un dataset di immagini o una singola immagine, esegue l'inferenza per creare i bounding box,
     e salva le immagini ritagliate nella directory di output.
-
     Args:
         input_path (str): Percorso alla directory di input o a una singola immagine.
         output_dir (str): Directory di output per salvare le immagini ritagliate.
@@ -100,38 +110,28 @@ def process_dataset(input_path, output_dir):
     Returns:
         None
     """
-    # Creare la directory di output, se non esiste
     os.makedirs(output_dir, exist_ok=True)
-
-    # Caso 1: input_path è una directory
+    # input_path is a directory
     if os.path.isdir(input_path):
         for root, _, files in os.walk(input_path):
             for file in files:
-                # Processa solo file con estensioni valide
                 if file.lower().endswith(('.png', '.jpg', '.jpeg')):
                     in_path = os.path.join(root, file)
-
-                    # Percorso relativo per mantenere la struttura della directory
                     relative_path = os.path.relpath(root, input_path)
                     out_dir = os.path.join(output_dir, relative_path)
                     os.makedirs(out_dir, exist_ok=True)
-
-                    # Esegui inferenza e salva le immagini ritagliate
                     cropped_images = run_inference(in_path)
                     if cropped_images:
                         for idx, cropped_image in enumerate(cropped_images):
                             out_image = os.path.join(out_dir, f"{os.path.splitext(file)[0]}_crop{idx}.png")
-                            if cropped_image.mode == "RGB":  # Controlla che sia un'immagine valida
+                            if cropped_image.mode == "RGB":  
                                 cropped_image.save(out_image)
-
-    # Caso 2: input_path è una singola immagine
+    # input_path is a single file
     elif os.path.isfile(input_path):
         if input_path.lower().endswith(('.png', '.jpg', '.jpeg')):
             file_name = os.path.basename(input_path)
             out_dir = output_dir
             os.makedirs(out_dir, exist_ok=True)
-
-            # Esegui inferenza e salva le immagini ritagliate
             cropped_images = run_inference(input_path)
             if cropped_images:
                 for idx, cropped_image in enumerate(cropped_images):

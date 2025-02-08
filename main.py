@@ -44,7 +44,7 @@ model_statistics_path = os.path.join(repo_path, "ModelResults/model_statistics.t
 model_path = os.path.join(repo_path, "ModelResults/trained_model.joblib")
 encoder_path = os.path.join(repo_path, "ModelResults/label_encoder.pkl")
 
-images_folder = os.path.join(repo_path, "images")
+images_folder = os.path.join(repo_path, "Images")
 output_folder = repo_path
 cropped_folder = os.path.join(output_folder, "ImageCropped")    
 
@@ -112,7 +112,7 @@ class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
 ros = RandomOverSampler(random_state=42)
 X_train_balanced, y_train_balanced = ros.fit_resample(X_train_scaled, y_train_encoded)
 
-model = train_model(X_train_scaled, y_train_encoded, class_weight_dict=None) 
+model = train_model(X_train_scaled, y_train_encoded) 
 cv_scores = cross_val_score(model, X_train, y_train_encoded, cv=5)
 metrics = evaluate_model(
     model,
@@ -227,9 +227,8 @@ print(f"\nMISSING MONSTER ARE: {missing_labels}\n")
 results_text_path = os.path.join(output_results, "classification_results.txt")
 with open(results_text_path, 'w') as f:
     f.write("\nCOLOR AND TEXT CLASSIFICATION RESULTS:\n")
-    f.write("IMAGE: ".join(image_name) + "\n")
     f.write(results_df.to_string() + "\n")
-    f.write("MONSTER THAT YOU HAVE:\n")
+    f.write("\nMONSTER THAT YOU HAVE:\n")
     f.write("\n".join(highest_accuracy_labels) + "\n")
     f.write("\nMISSING MONSTER ARE:\n")
     f.write(", ".join(missing_labels) + "\n")

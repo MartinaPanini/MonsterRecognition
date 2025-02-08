@@ -4,27 +4,62 @@ import numpy as np
 import pandas as pd
 from skimage.feature import graycomatrix, graycoprops
 
-# Extract histograms RGB from an image
 def extract_histogram_rgb(image, bins=32):
+    """
+    Extracts the RGB histograms from an image.
+    This function calculates the histogram for each of the three color channels (Red, Green, and Blue) of the input image.
+    The histograms are then flattened and concatenated into a single list.
+    Parameters:
+    image (numpy.ndarray): The input image from which to extract the histograms.
+    bins (int): The number of bins to use for the histograms. Default is 32.
+    Returns:
+    list: A list containing the concatenated histograms for the R, G, and B channels.
+    """
     histograms = []
-    for channel in range(3):  # Canali R, G, B
+    for channel in range(3):  # Channels R, G, B
         hist = cv2.calcHist([image], [channel], None, [bins], [0, 256])
         histograms.extend(hist.flatten())
     return histograms
 
-# Extract HSV histograms from an image
 def extract_histogram_hsv(image, bins=32):
+    """
+    Extracts the HSV histogram from an image.
+    This function converts the input image from BGR to HSV color space and 
+    computes the histogram for each of the three channels (Hue, Saturation, 
+    and Value). The histograms are then flattened and concatenated into a 
+    single list.
+    Parameters:
+    image (numpy.ndarray): The input image in BGR color space.
+    bins (int): The number of bins for the histogram (default is 32).
+    Returns:
+    list: A list containing the concatenated histograms for the H, S, and V 
+    channels.
+    """
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     histograms = []
-    for channel in range(3):  # Canali H, S, V
+    for channel in range(3):  # Channels H, S, V
         hist = cv2.calcHist([hsv_image], [channel], None, [bins], [0, 256])
         histograms.extend(hist.flatten())
     return histograms
 
-# Function to extract GLCM features from an image
 def extract_glcm_features(image):
-   gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-   try:
+    """
+    Extracts GLCM (Gray Level Co-occurrence Matrix) features from an image.
+    Parameters:
+    image (numpy.ndarray): Input image in BGR format.
+    Returns:
+    list: A list containing the following GLCM features:
+        - Contrast
+        - Dissimilarity
+        - Homogeneity
+        - Energy
+        - Correlation
+        If an error occurs during feature extraction, a list of five zeros is returned.
+    Raises:
+    Exception: If there is an error during the GLCM feature extraction process, it prints an error message and returns a list of five zeros.
+    """
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    try:
         glcm = graycomatrix(gray, distances=[1], angles=[0], symmetric=True, normed=True)
         features = [
             graycoprops(glcm, 'contrast')[0, 0],
@@ -34,12 +69,21 @@ def extract_glcm_features(image):
             graycoprops(glcm, 'correlation')[0, 0]
         ]
         return features
-   except Exception as e:
+    except Exception as e:
         print(f"Errore GLCM su {image}: {e}")
-        return [0] * 5  # Valori predefiniti se fallisce
+        return [0] * 5  # Pre-fill with zeros in case of error
 
-# Principal function to extract features
 def extract_features(image_path, bins=32):
+    """
+    Extracts features from an image located at the given path.
+    This function extracts three types of features: RGB histogram, HSV histogram, and GLCM features. 
+    Args:
+        image_path (str): The file path to the image.
+        bins (int, optional): The number of bins to use for the histograms. Default is 32.
+    Returns:
+        list: A list containing the concatenated features from the RGB histogram, HSV histogram, 
+              and GLCM features. If an error occurs, an empty list is returned.
+    """
     image = cv2.imread(image_path)
     if image is None:
         return []
@@ -63,11 +107,21 @@ def extract_features(image_path, bins=32):
         print(f"Errore durante l'estrazione delle feature da {image_path}: {e}")
         return []
 
-# Function to create dataset with new features
 def create_histograms(dataset_path, bins=32):
+    """
+    Create histograms and extract features from images in a dataset.
+    Args:
+        dataset_path (str): The path to the dataset directory. The directory should contain 
+                            subdirectories, each representing a different class label.
+        bins (int, optional): The number of bins to use for the histograms. Default is 32.
+    Returns:
+        tuple: A tuple containing:
+            - np.array: A numpy array of the extracted features for each image.
+            - np.array: A numpy array of the corresponding labels for each image.
+            - list: A list of column names for the features.
+    """
     data = []
     labels = []
-
     # Define column names
     column_names = [f'Bin_R{i+1}' for i in range(bins)] + \
                    [f'Bin_G{i+1}' for i in range(bins)] + \
@@ -77,10 +131,8 @@ def create_histograms(dataset_path, bins=32):
                    [f'Bin_V{i+1}' for i in range(bins)] + \
                    ['GLCM_Contrast', 'GLCM_Dissimilarity', 'GLCM_Homogeneity', 'GLCM_Energy', 'GLCM_Correlation'] + \
                     ['Label']
-
     expected_feature_length = len(column_names) - 1  # Exclude 'Label'
-
-    # Estrazione delle feature per ogni immagine
+    # Extract features from images in the dataset
     subdirectories = [d for d in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, d))]
     for label in subdirectories:
         folder_path = os.path.join(dataset_path, label)
@@ -93,8 +145,7 @@ def create_histograms(dataset_path, bins=32):
                     data.append(features + [label])
                     labels.append(label)
                 else:
-                    print(f"Feature mancanti o incomplete per {image_path} (estratte {len(features)} su {expected_feature_length})")    
-
+                    print(f"Feature mancanti o incomplete per {image_path} (estratte {len(features)} su {expected_feature_length})")        
     if not data:
         print(f"No valid data found in {dataset_path}")
         return [], [], column_names
