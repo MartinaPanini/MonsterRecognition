@@ -15,3 +15,9 @@ nbformat
 gdown
 rapidfuzz 
 easyocr
+matplotlib
+scikit-image
+joblib
+imblearn
+torchvision
+

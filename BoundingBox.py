@@ -1,12 +1,14 @@
 
 import os
 import cv2
-import shutil
 import numpy as np
 
-import nbimporter
 from monster_dataset import CanDataset, transform
 from torch.utils.data import DataLoader, Dataset
+
+import cv2 as cv
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Tentativo di prova per la creazione di bounding box sulle lattine, usando matchtemplate di opencv, fornendo come template un immagine di lattina dal dataset 
 # e andando a provarla su tutte le altre immagini della cartella train (modificabile in test) del dataset. 
@@ -15,10 +17,6 @@ from torch.utils.data import DataLoader, Dataset
 # C'è sia la versione normale sia una in cui provo a ciclare variando gli angoli di rotazione e la scalatura del template.
 # Ho provato a testarla anche su una delle foto della cartella Images (tris9) ma il risultato non è così buono.
 
-
-import cv2 as cv
-import numpy as np
-import matplotlib.pyplot as plt
 
 # Paths to images
 image_path = "/home/elia_avanzolini/.cache/kagglehub/datasets/tmmarquess/monster-energy-drink/versions/2/Monster_energy_drink_png/Monster_energy_drink/train/Aussie Lemonade/Imagem_29.png"

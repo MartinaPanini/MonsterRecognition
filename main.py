@@ -12,6 +12,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.utils.class_weight import compute_class_weight
+
 from run_inference import process_dataset, run_inference_and_draw
 from preprocess_images import preprocess_images
 from histograms import extract_features, create_histograms
