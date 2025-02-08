@@ -1,3 +1,4 @@
+
 import os
 import cv2
 import shutil
@@ -8,11 +9,11 @@ from monster_dataset import CanDataset, transform
 from torch.utils.data import DataLoader, Dataset
 
 # Tentativo di prova per la creazione di bounding box sulle lattine, usando matchtemplate di opencv, fornendo come template un immagine di lattina dal dataset 
-# e andando a provarla su tutte le altreimmagini della cartella train (modificabile in test) del dataset. 
+# e andando a provarla su tutte le altre immagini della cartella train (modificabile in test) del dataset. 
 # Il codice prova a usare i tre metodi prefissati della funzione di opencv normalizzati (TM_CCOEFF_NORMED, TM_CCOEFF, TM_SQDIFF_NORMED), ottenendo risultati 
 # decenti, specialmente sulle immagini più semplici. 
 # C'è sia la versione normale sia una in cui provo a ciclare variando gli angoli di rotazione e la scalatura del template.
-# Ho provato a testarla anche su una delle foto di Martina (tris9) ma il risultato non è così buono.
+# Ho provato a testarla anche su una delle foto della cartella Images (tris9) ma il risultato non è così buono.
 
 
 import cv2 as cv

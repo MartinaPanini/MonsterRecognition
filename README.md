@@ -9,6 +9,9 @@ This project uses machine learning and image processing techniques to recognize 
 - Recognize text on cans for additional verification
 - Save classification results with bounding boxes
 
+## Bounding boxes
+In the `BoundingBox.py` file there is an attempt to create bounding boxes with the OpenCV library.
+
 ## Prerequisites
 Make sure you have the following installed:
 
@@ -50,6 +53,8 @@ MonsterRecognition
 ├── preprocess_images.py
 ├── requirements.txt
 ├── run_inference.py
+├── BoundingBox.py
+├── monster_dataset.py
 └── text_detection.py
 ```
 
@@ -115,10 +120,6 @@ After training, the model and label encoder are saved in the `ModelResults/` fol
 
 ## References
 [![Dataset su Kaggle](https://img.shields.io/badge/Kaggle-Monster%20Energy%20Drink-blue?logo=kaggle)](https://www.kaggle.com/datasets/tmmarquess/monster-energy-drink)
-
 [EasyOCR](https://github.com/JaidedAI/EasyOCR)
-
 [Roboflow Inference SDK](https://github.com/roboflow/inference)
-
-
-
+[OpenCV](https://opencv.org/)
