@@ -18,7 +18,7 @@ from histograms import extract_features, create_histograms
 from color_class import train_model, classify_data, evaluate_model
 from text_detection import text_classification
 
-# Set this to True to create the dataset and preprocess it
+# Change the following variables to run the corresponding part of the code
 dataset = False
 download_dataset = False
 histograms = False
@@ -30,7 +30,7 @@ OUTPUT_ZIP = "dataset.zip"
 EXTRACT_FOLDER = "MonsterDataset"
 
 # PATHS 
-# Change these paths to the correct ones
+# Change root_path and repo_path to the correct ones
 root_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject"
 repo_path = "/Users/martinapanini/Library/Mobile Documents/com~apple~CloudDocs/Università/I Semestre/Signal_Image_Video/MonsterProject/MonsterRecognition"
 

@@ -1,14 +1,14 @@
 
 COLOR AND TEXT CLASSIFICATION RESULTS:
-tIMAGE: rIMAGE: iIMAGE: sIMAGE: 1IMAGE: _IMAGE: cIMAGE: rIMAGE: oIMAGE: pIMAGE: 2IMAGE: .IMAGE: pIMAGE: nIMAGE: g
-             Image      TextFilter        Text TextAccuracy  Color Prediction  Color Accuracy
-0  tris1_crop1.png  Original Image        MULE         90.0       ultra black           38.97
-1  tris1_crop0.png  Original Image  ZERO SUGAR         85.5  ultra watermelon           57.22
-2  tris1_crop2.png  Original Image       BLACK         90.0       ultra black           66.40
+             Image      TextFilter   Text TextAccuracy  Color Prediction  Color Accuracy
+0  tris1_crop1.png  Original Image   MULE         90.0       ultra black           38.97
+1  tris1_crop0.png  Original Image   ROSA         60.0  ultra watermelon           57.22
+2  tris1_crop2.png  Original Image  BLACK         90.0       ultra black           66.40
+
 MONSTER THAT YOU HAVE:
 MULE
-ZERO SUGAR
+ROSA
 BLACK
 
 MISSING MONSTER ARE:
-Rehab Peach Tea, ultra peachy keen, Mango Loco, Zero Sugar, Java Triple Shot, ultra sunrise, Ultra Citron, MIXXD, Super Fuel, Khaotic, Ultra Paradise, Ultra Fantasy Ruby Red, Monarch, Assault, Pacific Punch, nitro cosmic peach, Lewis Hamilton, ultra violet, Ultra, java salted caramel, lo carb, Original green, MULE, ultra strawberry dreams, ultra blue, Aussie Lemonade, ultra rosa, Pipeline Punch, nitro super dry, ultra gold, tea lemonade, ultra red, Orange Dreamsicle, Import, Espresso, Ultra Fiesta Mango
+ultra rosa, Ultra Fantasy Ruby Red, Orange Dreamsicle, java salted caramel, MULE, Ultra Fiesta Mango, Import, Ultra Paradise, Monarch, ultra red, ultra blue, MIXXD, Espresso, ultra gold, Pipeline Punch, nitro super dry, Super Fuel, Zero Sugar, Lewis Hamilton, nitro cosmic peach, Mango Loco, Pacific Punch, lo carb, tea lemonade, Ultra Citron, Assault, ultra violet, Java Triple Shot, ultra strawberry dreams, Rehab Peach Tea, ultra sunrise, Ultra, Aussie Lemonade, ultra peachy keen, Original green, Khaotic

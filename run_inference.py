@@ -1,8 +1,6 @@
 import os
 from inference_sdk import InferenceHTTPClient
 from PIL import Image, ImageDraw, ImageOps
-import supervision as sv
-import cv2
 
 def run_inference(in_path):
     """
@@ -24,7 +22,7 @@ def run_inference(in_path):
 
     try:
         with Image.open(in_path) as img:
-            img.verify()  # Verifica se l'immagine è valida
+            img.verify()  
     except Exception as e:
         print(f"Error in loading image {in_path}: {e}")
 
@@ -76,7 +74,6 @@ def run_inference_and_draw(in_path, output_path):
         return
     
     draw = ImageDraw.Draw(original_image) # Draw bounding box on image
-    print(result)
     for prediction in result['predictions']:
         x = prediction['x']
         y = prediction['y']
@@ -106,7 +103,6 @@ def process_dataset(input_path, output_dir):
     Args:
         input_path (str): Percorso alla directory di input o a una singola immagine.
         output_dir (str): Directory di output per salvare le immagini ritagliate.
-
     Returns:
         None
     """

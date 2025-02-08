@@ -1,10 +1,10 @@
 # Monster Energy Can Recognition
 
-This project uses machine learning and image processing techniques to recognize different types of Monster Energy cans based on their color and text. It leverages YOLO for object detection, extracts color histograms for classification, and combines text recognition for improved accuracy.
+This project uses machine learning and image processing techniques to recognize different types of Monster Energy cans based on their color and text. It detects a single can, extracts color histograms for classification, and combines text recognition for improved accuracy.
 
 ## Features
 - Download and preprocess dataset
-- Detect cans in images using YOLO
+- Detect cans in images using ```tin-can-r0yev/1``` model
 - Extract color histograms and train a classification model
 - Recognize text on cans for additional verification
 - Save classification results with bounding boxes
@@ -17,15 +17,6 @@ Make sure you have the following installed:
   ```bash
   pip install -r requirements.txt
   ```
-  
-## Required Libraries
-- pandas
-- numpy
-- joblib
-- gdown
-- scikit-learn
-- imbalanced-learn
-- pillow
 
 ## Dataset
 The dataset is downloaded from Google Drive. The script will automatically download and extract the dataset:
@@ -34,31 +25,38 @@ The dataset is downloaded from Google Drive. The script will automatically downl
 
 ## Project Structure
 ```
-MonsterRecognition/
-│
-├── ModelResults/
-│   ├── trained_model.joblib        # Trained ML model
-│   └── label_encoder.pkl           # Label encoder for classes
-│
-├── Monster_energy_drink/
-│   ├── train/                      # Training images
-│   └── test/                       # Test images
-│
-├── DatasetInference/
-│   ├── train/                      # YOLO processed training images
-│   └── test/                       # YOLO processed test images
-│
-├── Results/
-│   ├── train_histograms_features.csv
+MonsterRecognition
+├── ImageCropped
+│   
+├── Images
+│   
+├── ModelResults
+│   ├── label_encoder.pkl
+│   ├── model_statistics.txt
+│   └── trained_model.joblib
+├── README.md
+├── Results
+│   ├── ImageBounded.png
+│   ├── classification_results.csv
+│   ├── classification_results.txt
 │   ├── test_histograms_features.csv
-│   └── classification_results.csv  # Final classification results
+│   └── train_histograms_features.csv
+├── __pycache__
 │
-├── images/                         # Images to classify
-├── ImageCropped/                   # Cropped images after YOLO detection
-└── main.py                         # Main script to run the pipeline
+├── color_class.py
+├── download_dataset.ipynb
+├── histograms.py
+├── main.py
+├── preprocess_images.py
+├── requirements.txt
+├── run_inference.py
+└── text_detection.py
 ```
 
 ## How to Use
+
+### Download dataset
+Download the dataset from the notebook `download_dataset.ipynb` or from the Drive folder (dataset already preprocessed and with inference images) in `main.py`.
 
 ### 1. Run the Pipeline
 The main script `main.py` handles the entire process from downloading the dataset to classifying cans in images.
@@ -86,16 +84,16 @@ Ensure the image is placed in the `images/` directory.
 In `main.py`, you can control different parts of the pipeline by setting the following boolean variables:
 
 ```python
-dataset = True             # Set to True to create and preprocess the dataset
+dataset = True             # Set to True to create and preprocess the dataset 
 download_dataset = True    # Set to True to download and extract the dataset from Google Drive
 histograms = True          # Set to True to extract and save histograms from images
 process_images = True      # Set to True to preprocess images before feature extraction
 ```
 
-- **dataset**: Enables dataset creation and preprocessing, including bounding box creation for images.
-- **download_dataset**: Downloads the dataset from Google Drive if it doesn't exist locally.
-- **histograms**: Extracts color histograms from images, which are used as features for training the model.
-- **process_images**: Applies preprocessing steps (e.g., resizing, normalization) to the dataset images.
+- **dataset**: After downloaded the dataset, it provides to create bounding boxes and save the new dataset with single cans. It will be saved in ```DatasetInference``` folder.
+- **download_dataset**: Downloads the dataset from Google Drive if it doesn't exist locally. It allow to download the dataset with images already extracted with bounding boxes. In this dataset are also added classes of Monster cans. 
+- **histograms**: Extracts color histograms from images, which are used as features for training the model. This operation must be done only the first time, then results are stored in csv files. 
+- **process_images**: Applies preprocessing steps (e.g., resizing, normalization) to the dataset images. This step can be skipped if you have downloaded the dataset from the Drive folder. 
 
 Adjust these variables depending on which steps you want to execute.
 
@@ -116,6 +114,11 @@ After training, the model and label encoder are saved in the `ModelResults/` fol
 - **FileNotFoundError**: Ensure the image specified exists in the `images/` folder.
 
 ## References
+[![Dataset su Kaggle](https://img.shields.io/badge/Kaggle-Monster%20Energy%20Drink-blue?logo=kaggle)](https://www.kaggle.com/datasets/tmmarquess/monster-energy-drink)
+
+[EasyOCR](https://github.com/JaidedAI/EasyOCR)
+
+[Roboflow Inference SDK](https://github.com/roboflow/inference)
 
 
 
