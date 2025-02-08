@@ -120,6 +120,9 @@ After training, the model and label encoder are saved in the `ModelResults/` fol
 
 ## References
 [![Dataset su Kaggle](https://img.shields.io/badge/Kaggle-Monster%20Energy%20Drink-blue?logo=kaggle)](https://www.kaggle.com/datasets/tmmarquess/monster-energy-drink)
+
 [EasyOCR](https://github.com/JaidedAI/EasyOCR)
+
 [Roboflow Inference SDK](https://github.com/roboflow/inference)
+
 [OpenCV](https://opencv.org/)
