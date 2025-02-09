@@ -1,4 +1,4 @@
 Image,TextFilter,Text,TextAccuracy,Color Prediction,Color Accuracy
-tris1_crop1.png,Original Image,MULE,90.0,ultra black,38.97
-tris1_crop0.png,Original Image,ROSA,60.00000000000001,ultra watermelon,57.22
-tris1_crop2.png,Original Image,BLACK,90.0,ultra black,66.4
+tris2_crop0.png,Original Image,KHAOTIC,77.14285714285715,Khaotic,98.25
+tris2_crop1.png,Original Image,MONARCH,90.0,Monarch,89.46
+tris2_crop2.png,Original Image,MANGO LOCO,90.0,Mango Loco,98.31

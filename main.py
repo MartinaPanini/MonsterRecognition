@@ -49,7 +49,7 @@ images_folder = os.path.join(repo_path, "Images")
 output_folder = repo_path
 cropped_folder = os.path.join(output_folder, "ImageCropped")    
 
-image_name = "tris1.jpeg"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
+image_name = "tris2.JPG"   # CHANGE THIS TO THE IMAGE YOU WANT TO TEST
 
 # Create Dataset with bounded boxes images from the main Dataset and preprocess them 
 if dataset:

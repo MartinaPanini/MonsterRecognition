@@ -1,14 +1,14 @@
 
 COLOR AND TEXT CLASSIFICATION RESULTS:
-             Image      TextFilter   Text TextAccuracy  Color Prediction  Color Accuracy
-0  tris1_crop1.png  Original Image   MULE         90.0       ultra black           38.97
-1  tris1_crop0.png  Original Image   ROSA         60.0  ultra watermelon           57.22
-2  tris1_crop2.png  Original Image  BLACK         90.0       ultra black           66.40
+             Image      TextFilter        Text TextAccuracy Color Prediction  Color Accuracy
+0  tris2_crop0.png  Original Image     KHAOTIC    77.142857          Khaotic           98.25
+1  tris2_crop1.png  Original Image     MONARCH         90.0          Monarch           89.46
+2  tris2_crop2.png  Original Image  MANGO LOCO         90.0       Mango Loco           98.31
 
 MONSTER THAT YOU HAVE:
-MULE
-ROSA
-BLACK
+Khaotic
+MONARCH
+Mango Loco
 
 MISSING MONSTER ARE:
-Lewis Hamilton, Ultra Citron, Java Triple Shot, Import, MIXXD, Ultra Fiesta Mango, tea lemonade, Zero Sugar, lo carb, Pipeline Punch, java salted caramel, ultra gold, Pacific Punch, ultra violet, Mango Loco, Orange Dreamsicle, ultra red, nitro super dry, Rehab Peach Tea, ultra peachy keen, Assault, Espresso, Aussie Lemonade, MULE, Khaotic, nitro cosmic peach, Super Fuel, Ultra, Original green, ultra sunrise, ultra rosa, ultra blue, Monarch, Ultra Paradise, Ultra Fantasy Ruby Red, ultra strawberry dreams
+ultra watermelon, Aussie Lemonade, Java Triple Shot, Lewis Hamilton, ultra black, ultra red, lo carb, ultra gold, nitro super dry, ultra violet, ultra peachy keen, MULE, ultra strawberry dreams, java salted caramel, tea lemonade, Ultra Fiesta Mango, Assault, ultra blue, Ultra, MIXXD, Ultra Paradise, Import, nitro cosmic peach, Pacific Punch, Super Fuel, ultra rosa, ultra sunrise, Ultra Citron, Espresso, Ultra Fantasy Ruby Red, Rehab Peach Tea, Pipeline Punch, Original green, Zero Sugar, Orange Dreamsicle
