@@ -117,7 +117,7 @@ model = train_model(X_train_scaled, y_train_encoded)
 cv_scores = cross_val_score(model, X_train, y_train_encoded, cv=5)
 metrics = evaluate_model(
     model,
-    X_test,
+    X_test_scaled,
     y_test_encoded,  
     label_encoder,
     model_statistics_path
